@@ -45,18 +45,10 @@ get_trait_mollusque <- function(andes_db_connection, proj = NULL) {
   trait <- get_trait_mollusque_db(andes_db_connection)
 
   # Take data from projet_mollusque
-  cols_from_parent <- c(
-    "COD_SOURCE_INFO",
-    "NO_RELEVE",
-    "COD_NBPC",
-    "NO_CHARGEMENT"
-  )
-  data_from_parent <- proj[, names(proj) %in% cols_from_parent]
-  trait <- left_join_preserve_order(
-    trait,
-    data_from_parent,
-    on = "andes_mission_id"
-  )
+  trait$COD_SOURCE_INFO <- proj$COD_SOURCE_INFO[1]
+  trait$NO_RELEVE <- proj$NO_RELEVE[1]
+  trait$COD_NBPC <- proj$COD_NBPC[1]
+  trait$NO_CHARGEMENT <- proj$NO_CHARGEMENT[1]
 
   # temporarily get desc_serie_hist_f from proj to trait, it will provide the context to correctly get the zone/strate
   desc_serie_hist_f <- get_ref_key(
@@ -105,10 +97,7 @@ get_trait_mollusque <- function(andes_db_connection, proj = NULL) {
   # can get rid of operation column
   trait$operation <- NULL
 
-  # can get rid of andes_mission_id column
-  trait$andes_mission_id <- NULL
   # validate set_result : conistency between set_is_valid and COD_RESULT_OPER.
-
   trait <- validate_set_result(trait)
 
   # make a copy for for the times before we format the dates

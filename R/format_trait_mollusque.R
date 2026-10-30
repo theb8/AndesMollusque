@@ -446,6 +446,7 @@ validate_set_result <- function(trait) {
     if (!is.null(msg)) {
       logger::log_error(msg)
     }
+
     return()
   }
 

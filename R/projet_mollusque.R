@@ -103,6 +103,10 @@ get_projet_mollusque <- function(andes_db_connection) {
 #' @export
 validate_projet_mollusque <- function(df) {
   is_valid <- TRUE
+
+  # project should only have one mission
+  is_valid <- is_valid & (nrow(df) == 1)
+
   # check all required cols are present
   result <- check_columns_present(
     df,
@@ -213,7 +217,13 @@ write_projet_mollusque <- function(proj, access_db_write_connection = NULL) {
     stop("Failed to provide a new MS Acces connection")
   }
 
-  statement <- generate_sql_insert_statement(proj[1, -1], "PROJET_MOLLUSQUE")
+  # validate one mission/proj
+  if (nrow(proj) != 1) {
+    logger::log_error("Projet doit avoir une seul rangé")
+    stop("Projet doit avoir une seul rangé")
+  }
+
+  statement <- generate_sql_insert_statement(proj[1, ], "PROJET_MOLLUSQUE")
   result <- DBI::dbExecute(access_db_write_connection, statement)
 
   if (result != 1) {
